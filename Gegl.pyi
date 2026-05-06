@@ -1,7 +1,7 @@
 import collections
 import enum
 import typing
-from typing import Any
+from typing import Any, type_check_only
 
 import gi
 from gi.repository import GLib, GObject
@@ -68,6 +68,12 @@ class Color(GObject.Object):
     def parent_instance(self) -> Any: ...
     @property
     def priv(self) -> Any: ...
+    @type_check_only
+    class Props(GObject.Object.Props):
+        string: str
+
+    @property
+    def props(self) -> Props: ...
 
 class TileSource(GObject.Object):
     @property
@@ -89,6 +95,12 @@ class TileHandler(TileSource):
     def source(self) -> Any: ...
     @property
     def priv(self) -> Any: ...
+    @type_check_only
+    class Props(TileSource.Props):
+        source: GObject.Object
+
+    @property
+    def props(self) -> Props: ...
 
 class Buffer(TileHandler):
     @classmethod
@@ -152,6 +164,29 @@ class Buffer(TileHandler):
         data: Any = None,
     ) -> int: ...
     def thaw_changed(self) -> None: ...
+    @type_check_only
+    class Props(TileHandler.Props):
+        abyss_height: int
+        abyss_width: int
+        abyss_x: int
+        abyss_y: int
+        backend: TileBackend
+        format: bytes
+        height: int
+        initialized: bool
+        path: str
+        pixels: int
+        px_size: int
+        shift_x: int
+        shift_y: int
+        tile_height: int
+        tile_width: int
+        width: int
+        x: int
+        y: int
+
+    @property
+    def props(self) -> Props: ...
 
 class Rectangle(gi.Boxed):
     @property
@@ -230,6 +265,12 @@ class AudioFragment(GObject.Object):
     def data(self) -> Any: ...
     @property
     def priv(self) -> Any: ...
+    @type_check_only
+    class Props(GObject.Object.Props):
+        string: str
+
+    @property
+    def props(self) -> Props: ...
 
 class AudioFragmentClass(gi.Struct):
     @property
@@ -345,6 +386,23 @@ class ColorPrivate(gi.Struct):
 
 class Config(GObject.Object):
     pass
+    @type_check_only
+    class Props(GObject.Object.Props):
+        application_license: str
+        chunk_size: int
+        mipmap_rendering: bool
+        quality: float
+        queue_size: int
+        swap: str
+        swap_compression: str
+        threads: int
+        tile_cache_size: bytes
+        tile_height: int
+        tile_width: int
+        use_opencl: bool
+
+    @property
+    def props(self) -> Props: ...
 
 class Curve(GObject.Object):
     @classmethod
@@ -493,6 +551,25 @@ class MetadataStore(GObject.Object, Metadata):
     def do_set_value(type, self, name: str, value: GObject.Value) -> None: ...
     @property
     def parent_instance(self) -> Any: ...
+    @type_check_only
+    class Props(GObject.Object.Props):
+        artist: str
+        comment: str
+        copyright: str
+        description: str
+        disclaimer: str
+        file_module_name: str
+        resolution_unit: ResolutionUnit
+        resolution_x: float
+        resolution_y: float
+        software: str
+        source: str
+        timestamp: GLib.DateTime
+        title: str
+        warning: str
+
+    @property
+    def props(self) -> Props: ...
 
 class MetadataHash(MetadataStore):
     @classmethod
@@ -620,6 +697,18 @@ class Node(GObject.Object):
     def set_time(self, time: float) -> None: ...
     def to_xml(self, path_root: str) -> str: ...
     def to_xml_full(self, tail: Node | None, path_root: str) -> str: ...
+    @type_check_only
+    class Props(GObject.Object.Props):
+        cache_policy: CachePolicy
+        dont_cache: bool
+        gegl_operation: Operation
+        name: str
+        operation: str
+        passthrough: bool
+        use_opencl: bool
+
+    @property
+    def props(self) -> Props: ...
 
 class Operation(GObject.Object):
     @staticmethod
@@ -830,6 +919,15 @@ class Processor(GObject.Object):
     def set_rectangle(self, rectangle: Rectangle) -> None: ...
     def set_scale(self, scale: float) -> None: ...
     def work(self) -> tuple[bool, float]: ...
+    @type_check_only
+    class Props(GObject.Object.Props):
+        chunksize: int
+        node: Node
+        progress: float
+        rectangle: bytes
+
+    @property
+    def props(self) -> Props: ...
 
 class Random(gi.Boxed):
     @classmethod
@@ -887,6 +985,32 @@ class SplitStrategy(enum.IntEnum):
 
 class Stats(GObject.Object):
     pass
+    @type_check_only
+    class Props(GObject.Object.Props):
+        active_threads: int
+        assigned_threads: int
+        scratch_total: bytes
+        swap_busy: bool
+        swap_file_size: bytes
+        swap_queue_full: bool
+        swap_queue_stalls: int
+        swap_queued_total: bytes
+        swap_read_total: bytes
+        swap_reading: bool
+        swap_total: bytes
+        swap_total_uncompressed: bytes
+        swap_write_total: bytes
+        swap_writing: bool
+        tile_alloc_total: bytes
+        tile_cache_hits: int
+        tile_cache_misses: int
+        tile_cache_total: bytes
+        tile_cache_total_max: bytes
+        tile_cache_total_uncompressed: bytes
+        zoom_total: bytes
+
+    @property
+    def props(self) -> Props: ...
 
 class Tile(gi.Struct):
     pass
@@ -908,6 +1032,17 @@ class TileBackend(TileSource):
     def parent_instance(self) -> Any: ...
     @property
     def priv(self) -> Any: ...
+    @type_check_only
+    class Props(TileSource.Props):
+        flush_on_destroy: bool
+        format: bytes
+        px_size: int
+        tile_height: int
+        tile_size: int
+        tile_width: int
+
+    @property
+    def props(self) -> Props: ...
 
 class TileBackendClass(gi.Struct):
     @property

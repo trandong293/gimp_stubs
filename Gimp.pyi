@@ -1,8 +1,7 @@
-import builtins
 import collections
 import enum
 import typing
-from typing import Any
+from typing import Any, type_check_only
 
 import cairo
 import gi
@@ -935,6 +934,14 @@ class Procedure(GObject.Object):
     def do_uninstall(type, self) -> None: ...
     @property
     def parent_instance(self) -> Any: ...
+    @type_check_only
+    class Props(GObject.Object.Props):
+        name: str
+        plug_in: PlugIn
+        procedure_type: PDBProcType
+
+    @property
+    def props(self) -> Props: ...
 
 class BatchProcedure(Procedure):
     @classmethod
@@ -1029,6 +1036,12 @@ class Resource(GObject.Object, ConfigInterface):
     def rename(self, new_name: str) -> bool: ...
     @property
     def parent_instance(self) -> Any: ...
+    @type_check_only
+    class Props(GObject.Object.Props):
+        id: int
+
+    @property
+    def props(self) -> Props: ...
 
 class Brush(Resource):
     @classmethod
@@ -1208,6 +1221,12 @@ class Item(GObject.Object):
     def transform_translate(self, off_x: float, off_y: float) -> Item: ...
     @property
     def parent_instance(self) -> Any: ...
+    @type_check_only
+    class Props(GObject.Object.Props):
+        id: int
+
+    @property
+    def props(self) -> Props: ...
 
 class Drawable(Item):
     @staticmethod
@@ -1468,6 +1487,28 @@ class ColorConfig(GObject.Object, ConfigInterface):
     def get_simulation_gamut_check(self) -> bool: ...
     def get_simulation_intent(self) -> ColorRenderingIntent: ...
     def get_simulation_optimize(self) -> bool: ...
+    @type_check_only
+    class Props(GObject.Object.Props):
+        cmyk_profile: ConfigPath
+        display_optimize: bool
+        display_profile: ConfigPath
+        display_profile_from_gdk: bool
+        display_rendering_intent: ColorRenderingIntent
+        display_use_black_point_compensation: bool
+        gray_profile: ConfigPath
+        mode: ColorManagementMode
+        out_of_gamut_color: Gegl.Color
+        rgb_profile: ConfigPath
+        show_hsv: bool
+        show_rgb_u8: bool
+        simulation_gamut_check: bool
+        simulation_optimize: bool
+        simulation_profile: ConfigPath
+        simulation_rendering_intent: ColorRenderingIntent
+        simulation_use_black_point_compensation: bool
+
+    @property
+    def props(self) -> Props: ...
 
 class ColorConfigClass(gi.Struct):
     @property
@@ -1690,7 +1731,7 @@ class ConfigError(enum.IntEnum):
     PARSE = 3
     VERSION = 4
 
-class ConfigPath(builtins.object):
+class ConfigPath(object):
     @staticmethod
     def expand(path: str, recode: bool) -> str: ...
     @staticmethod
@@ -1779,6 +1820,13 @@ class Curve(GObject.Object):
     def set_point(self, point: int, x: float, y: float) -> None: ...
     def set_point_type(self, point: int, type: CurvePointType) -> None: ...
     def set_sample(self, x: float, y: float) -> None: ...
+    @type_check_only
+    class Props(GObject.Object.Props):
+        curve_type: CurveType
+        n_samples: int
+
+    @property
+    def props(self) -> Props: ...
 
 class CurveClass(gi.Struct):
     @property
@@ -1813,6 +1861,12 @@ class Display(GObject.Object):
     def get_window_handle(self) -> GLib.Bytes: ...
     def is_valid(self) -> bool: ...
     def present(self) -> bool: ...
+    @type_check_only
+    class Props(GObject.Object.Props):
+        id: int
+
+    @property
+    def props(self) -> Props: ...
 
 class DisplayClass(gi.Struct):
     @property
@@ -1883,6 +1937,12 @@ class DrawableFilter(GObject.Object):
     def set_opacity(self, opacity: float) -> None: ...
     def set_visible(self, visible: bool) -> bool: ...
     def update(self) -> None: ...
+    @type_check_only
+    class Props(GObject.Object.Props):
+        id: int
+
+    @property
+    def props(self) -> Props: ...
 
 class DrawableFilterClass(gi.Struct):
     @property
@@ -1939,6 +1999,12 @@ class ExportCapabilities(GObject.GFlags):
 
 class ExportOptions(GObject.Object):
     def get_image(self, image: Image) -> tuple[ExportReturn, Image]: ...
+    @type_check_only
+    class Props(GObject.Object.Props):
+        capabilities: ExportCapabilities
+
+    @property
+    def props(self) -> Props: ...
 
 class ExportOptionsClass(gi.Struct):
     @property
@@ -2008,6 +2074,18 @@ class ExportProcedure(FileProcedure):
     def set_support_profile(self, supports: bool) -> None: ...
     def set_support_thumbnail(self, supports: bool) -> None: ...
     def set_support_xmp(self, supports: bool) -> None: ...
+    @type_check_only
+    class Props(FileProcedure.Props):
+        capabilities: ExportCapabilities
+        supports_comment: bool
+        supports_exif: bool
+        supports_iptc: bool
+        supports_profile: bool
+        supports_thumbnail: bool
+        supports_xmp: bool
+
+    @property
+    def props(self) -> Props: ...
 
 class ExportProcedureClass(gi.Struct):
     @property
@@ -2513,6 +2591,12 @@ class Image(GObject.Object):
     def undo_is_enabled(self) -> bool: ...
     def undo_thaw(self) -> bool: ...
     def unset_active_channel(self) -> bool: ...
+    @type_check_only
+    class Props(GObject.Object.Props):
+        id: int
+
+    @property
+    def props(self) -> Props: ...
 
 class ImageBaseType(GObject.GEnum):
     RGB = 0
@@ -2832,7 +2916,7 @@ class Matrix4(gi.Struct):
         self, x: float, y: float, z: float
     ) -> tuple[float, float, float, float]: ...
 
-class Memsize(builtins.object):
+class Memsize(object):
     @staticmethod
     def deserialize(string: str) -> tuple[bool, int]: ...
     @staticmethod
@@ -2921,6 +3005,13 @@ class Module(GObject.TypeModule):
     def do_modified(type, self) -> None: ...
     @property
     def parent_instance(self) -> Any: ...
+    @type_check_only
+    class Props(GObject.TypeModule.Props):
+        auto_load: bool
+        on_disk: bool
+
+    @property
+    def props(self) -> Props: ...
 
 class ModuleClass(gi.Struct):
     @property
@@ -3400,6 +3491,14 @@ class PlugIn(GObject.Object):
     ) -> tuple[bool, str | None, str | None]: ...
     @property
     def parent_instance(self) -> Any: ...
+    @type_check_only
+    class Props(GObject.Object.Props):
+        program_name: str
+        read_channel: GLib.IOChannel
+        write_channel: GLib.IOChannel
+
+    @property
+    def props(self) -> Props: ...
 
 class PlugInClass(gi.Struct):
     @property
@@ -3501,6 +3600,12 @@ class ProcedureConfig(GObject.Object):
     ) -> None: ...
     @property
     def parent_instance(self) -> Any: ...
+    @type_check_only
+    class Props(GObject.Object.Props):
+        procedure: Procedure
+
+    @property
+    def props(self) -> Props: ...
 
 class ProcedureConfigClass(gi.Struct):
     @property
@@ -3865,6 +3970,17 @@ class Unit(GObject.Object):
     def is_built_in(self) -> bool: ...
     def is_metric(self) -> bool: ...
     def set_deletion_flag(self, deletion_flag: bool) -> None: ...
+    @type_check_only
+    class Props(GObject.Object.Props):
+        abbreviation: str
+        digits: int
+        factor: float
+        id: int
+        name: str
+        symbol: str
+
+    @property
+    def props(self) -> Props: ...
 
 class UnitClass(gi.Struct):
     @property

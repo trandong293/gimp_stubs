@@ -4,15 +4,77 @@ import inspect
 from typing import Any
 
 import gi
+from gi.repository import GObject
 
 SPACE = 4 * " "
 CONTEXT = ""
+# https://stackoverflow.com/a/78306153/16187830
+GTYPE_TO_PYTHON = {
+    GObject.type_from_name(GObject.type_name(ptype)): ptype
+    for ptype in (int, float, str, bool, object)
+}
+METADATA = {
+    "Gimp": {
+        "imports": [
+            "import collections",
+            "import enum",
+            "import typing",
+            "from typing import Any, type_check_only",
+            "import cairo",
+            "import gi",
+            "from gi.repository import GdkPixbuf, GExiv2, Gio, GLib, GObject, Pango",
+            "import Babl",
+            "import Gegl",
+        ],
+        "version": "3.0",
+    },
+    "GimpUi": {
+        "imports": [
+            "import collections",
+            "import enum",
+            "import typing",
+            "from typing import Any, type_check_only",
+            "import cairo",
+            "import gi",
+            "from gi.repository import Gdk, GdkPixbuf, Gio, GLib, GObject, Gtk",
+            "import Babl",
+            "import Gegl",
+            "import Gimp",
+        ],
+        "version": "3.0",
+    },
+    "Babl": {
+        "imports": [
+            "import enum",
+            "from typing import Any",
+            "import gi",
+        ],
+        "version": "0.1",
+    },
+    "Gegl": {
+        "imports": [
+            "import collections",
+            "import enum",
+            "import typing",
+            "from typing import Any, type_check_only",
+            "import gi",
+            "from gi.repository import GLib, GObject",
+            "import Babl",
+        ],
+        "version": "0.4",
+    },
+}
 
 
-def get_str_short_type(typ: str) -> str:
+def get_str_short_type(typ: str | type) -> str:
+    if type(typ) is not str:
+        typ = "%s.%s" % (typ.__module__, typ.__name__)
     return (
+        # replace
         typ.replace("gi._gi", "GObject")
         .replace("gobject", "GObject")
+        # remove
+        .replace("builtins.", "")
         .replace("gi.repository.", "")
         .replace("gi.overrides.", "")
         .replace("%s." % CONTEXT, "")
@@ -46,15 +108,6 @@ def get_str_introspection(parent: Any, num_space: int = 0) -> str:
         # fields:
         # @property
         # def name(self) -> ret_type: ...
-        # ...
-        # properties:
-        # @type_check_only
-        # class Props(base.Props):
-        #   name: type
-        #   ...
-        # @property
-        # def props(self) -> Props: ...
-
         if typ is property:
             # todo: get signature from gir fields
             s_intros.append("@property")
@@ -65,7 +118,7 @@ def get_str_introspection(parent: Any, num_space: int = 0) -> str:
             bases = get_str_bases(child.__bases__)
             s_intros.append("class %s(%s):" % (name, bases))
             for e in child:
-                s_intros.append("%s%s = %s" % (SPACE, e.name, e.value))
+                s_intros.append(SPACE + "%s = %s" % (e.name, e.value))
             continue
 
         if typ in [gi._gi.FunctionInfo, gi._gi.VFuncInfo]:
@@ -94,70 +147,41 @@ def get_str_introspection(parent: Any, num_space: int = 0) -> str:
                 s_intros.append("%spass" % SPACE)
             else:
                 s_intros.append(s_class_content)
+            # properties:
+            # @type_check_only
+            # class Props(base.Props):
+            #   name: type
+            #   ...
+            # @property
+            # def props(self) -> Props: ...
+            s_has_props = []
+            if hasattr(child, "props"):
+                props = getattr(child, "props")
+                s_props = []
+                for name, prop in inspect.getmembers(props):
+                    # ignore all props not from its direct parent
+                    if prop.owner_type.pytype is child:
+                        prop_gtype = prop.value_type
+                        prop_type = prop_gtype.pytype or GTYPE_TO_PYTHON.get(
+                            prop_gtype, bytes
+                        )
+                        s_type = get_str_short_type(prop_type)
+                        s_props.append(SPACE + "%s: %s" % (name, s_type))
+                if len(s_props):
+                    s_has_props.append("@type_check_only")
+                    s_has_props.append(
+                        "class Props(%s.Props):" % get_str_short_type(child.__base__)
+                    )
+                    s_has_props.extend(s_props)
+                    s_has_props.append("@property")
+                    s_has_props.append("def props(self) -> Props: ...")
+            s_has_props = [SPACE + s_has_prop for s_has_prop in s_has_props]
+            s_intros.extend(s_has_props)
             continue
 
-        print(5 * "\n")
-        print(name, child, typ)
-        print(5 * "\n")
+        print("[MISSING]", name, child, typ)
     s_intros = [num_space * SPACE + s_intro for s_intro in s_intros]
-    a = "\n".join(s_intros)
-    # if num_space > 0:
-    #    print(a)
-    return a
-
-
-METADATA = {
-    "Gimp": {
-        "imports": [
-            "import builtins",
-            "import collections",
-            "import enum",
-            "import typing",
-            "from typing import Any",
-            "import cairo",
-            "import gi",
-            "from gi.repository import GdkPixbuf, GExiv2, Gio, GLib, GObject, Pango",
-            "import Babl",
-            "import Gegl",
-        ],
-        "version": "3.0",
-    },
-    "GimpUi": {
-        "imports": [
-            "import collections",
-            "import enum",
-            "import typing",
-            "from typing import Any",
-            "import cairo",
-            "import gi",
-            "from gi.repository import Gdk, GdkPixbuf, Gio, GLib, GObject, Gtk",
-            "import Babl",
-            "import Gegl",
-            "import Gimp",
-        ],
-        "version": "3.0",
-    },
-    "Babl": {
-        "imports": [
-            "import enum",
-            "from typing import Any",
-            "import gi",
-        ],
-        "version": "0.1",
-    },
-    "Gegl": {
-        "imports": [
-            "import collections",
-            "import enum",
-            "import typing",
-            "from typing import Any",
-            "import gi",
-            "from gi.repository import GLib, GObject",
-            "import Babl",
-        ],
-        "version": "0.4",
-    },
-}
+    return "\n".join(s_intros)
 
 
 def gen_stubs(module_name: str) -> str:
