@@ -6,7 +6,7 @@ from typing import Any
 import gi
 
 SPACE = 4 * " "
-CONTEXT = ""  # Gimp, Gegl, Babl
+CONTEXT = ""
 
 
 def get_str_short_type(typ: str) -> str:
@@ -34,7 +34,7 @@ def get_str_signature(obj: any) -> str:
 def get_str_introspection(parent: Any, num_space: int = 0) -> str:
     s_intros = []
     for name, child in vars(parent).items():
-        if name.startswith("__"):
+        if name.startswith("__") or name == "_lock":
             continue
 
         typ = type(child)
@@ -52,6 +52,8 @@ def get_str_introspection(parent: Any, num_space: int = 0) -> str:
         # class Props(base.Props):
         #   name: type
         #   ...
+        # @property
+        # def props(self) -> Props: ...
 
         if typ is property:
             # todo: get signature from gir fields
@@ -120,6 +122,21 @@ METADATA = {
         ],
         "version": "3.0",
     },
+    "GimpUi": {
+        "imports": [
+            "import collections",
+            "import enum",
+            "import typing",
+            "from typing import Any",
+            "import cairo",
+            "import gi",
+            "from gi.repository import Gdk, GdkPixbuf, Gio, GLib, GObject, Gtk",
+            "import Babl",
+            "import Gegl",
+            "import Gimp",
+        ],
+        "version": "3.0",
+    },
     "Babl": {
         "imports": [
             "import enum",
@@ -159,9 +176,9 @@ def gen_stubs(module_name: str) -> str:
 
 
 def main():
-    # print(gen_stubs("Gimp"))
-    # print(gen_stubs("Babl"))
-    print(gen_stubs("Gegl"))
+    for module_name in METADATA:
+        with open("%s.pyi" % module_name, "w") as f:
+            print(gen_stubs(module_name), file=f)
 
 
 if __name__ == "__main__":

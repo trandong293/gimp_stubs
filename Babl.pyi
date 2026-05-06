@@ -5,6 +5,10 @@ import gi
 
 _namespace: str = "Babl"
 _version: str = "0.1"
+
+class Object(gi.Struct):
+    pass
+
 ALPHA_FLOOR: int = 0
 ALPHA_FLOOR_F: int = 0
 
@@ -30,9 +34,6 @@ class ModelFlag(enum.IntFlag):
     RGB = 2097152
     CIE = 8388608
     CMYK = 16777216
-
-class Object(gi.Struct):
-    pass
 
 class SpaceFlags(enum.IntEnum):
     NONE = 0
