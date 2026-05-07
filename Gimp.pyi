@@ -40,6 +40,14 @@ class Array(gi.Boxed):
     def free(self) -> None: ...
 
 class Procedure(GObject.Object):
+    @type_check_only
+    class Props(GObject.Object.Props):
+        name: str
+        plug_in: PlugIn
+        procedure_type: PDBProcType
+
+    @property
+    def props(self) -> Props: ...
     @classmethod
     def new(
         cls,
@@ -934,14 +942,6 @@ class Procedure(GObject.Object):
     def do_uninstall(type, self) -> None: ...
     @property
     def parent_instance(self) -> Any: ...
-    @type_check_only
-    class Props(GObject.Object.Props):
-        name: str
-        plug_in: PlugIn
-        procedure_type: PDBProcType
-
-    @property
-    def props(self) -> Props: ...
 
 class BatchProcedure(Procedure):
     @classmethod
@@ -1004,6 +1004,12 @@ class ConfigInterface(GObject.GInterface):
     ) -> GObject.GType: ...
 
 class Resource(GObject.Object, ConfigInterface):
+    @type_check_only
+    class Props(GObject.Object.Props):
+        id: int
+
+    @property
+    def props(self) -> Props: ...
     @staticmethod
     def get_by_id(resource_id: int) -> Resource | None: ...
     @staticmethod
@@ -1036,12 +1042,6 @@ class Resource(GObject.Object, ConfigInterface):
     def rename(self, new_name: str) -> bool: ...
     @property
     def parent_instance(self) -> Any: ...
-    @type_check_only
-    class Props(GObject.Object.Props):
-        id: int
-
-    @property
-    def props(self) -> Props: ...
 
 class Brush(Resource):
     @classmethod
@@ -1106,6 +1106,12 @@ class CapStyle(GObject.GEnum):
     SQUARE = 2
 
 class Item(GObject.Object):
+    @type_check_only
+    class Props(GObject.Object.Props):
+        id: int
+
+    @property
+    def props(self) -> Props: ...
     @staticmethod
     def get_by_id(item_id: int) -> Item | None: ...
     @staticmethod
@@ -1221,12 +1227,6 @@ class Item(GObject.Object):
     def transform_translate(self, off_x: float, off_y: float) -> Item: ...
     @property
     def parent_instance(self) -> Any: ...
-    @type_check_only
-    class Props(GObject.Object.Props):
-        id: int
-
-    @property
-    def props(self) -> Props: ...
 
 class Drawable(Item):
     @staticmethod
@@ -1472,21 +1472,6 @@ class CloneType(GObject.GEnum):
     PATTERN = 1
 
 class ColorConfig(GObject.Object, ConfigInterface):
-    def get_cmyk_color_profile(self) -> ColorProfile: ...
-    def get_display_bpc(self) -> bool: ...
-    def get_display_color_profile(self) -> ColorProfile: ...
-    def get_display_intent(self) -> ColorRenderingIntent: ...
-    def get_display_optimize(self) -> bool: ...
-    def get_display_profile_from_gdk(self) -> bool: ...
-    def get_gray_color_profile(self) -> ColorProfile: ...
-    def get_mode(self) -> ColorManagementMode: ...
-    def get_out_of_gamut_color(self) -> Gegl.Color: ...
-    def get_rgb_color_profile(self) -> ColorProfile: ...
-    def get_simulation_bpc(self) -> bool: ...
-    def get_simulation_color_profile(self) -> ColorProfile: ...
-    def get_simulation_gamut_check(self) -> bool: ...
-    def get_simulation_intent(self) -> ColorRenderingIntent: ...
-    def get_simulation_optimize(self) -> bool: ...
     @type_check_only
     class Props(GObject.Object.Props):
         cmyk_profile: ConfigPath
@@ -1509,6 +1494,21 @@ class ColorConfig(GObject.Object, ConfigInterface):
 
     @property
     def props(self) -> Props: ...
+    def get_cmyk_color_profile(self) -> ColorProfile: ...
+    def get_display_bpc(self) -> bool: ...
+    def get_display_color_profile(self) -> ColorProfile: ...
+    def get_display_intent(self) -> ColorRenderingIntent: ...
+    def get_display_optimize(self) -> bool: ...
+    def get_display_profile_from_gdk(self) -> bool: ...
+    def get_gray_color_profile(self) -> ColorProfile: ...
+    def get_mode(self) -> ColorManagementMode: ...
+    def get_out_of_gamut_color(self) -> Gegl.Color: ...
+    def get_rgb_color_profile(self) -> ColorProfile: ...
+    def get_simulation_bpc(self) -> bool: ...
+    def get_simulation_color_profile(self) -> ColorProfile: ...
+    def get_simulation_gamut_check(self) -> bool: ...
+    def get_simulation_intent(self) -> ColorRenderingIntent: ...
+    def get_simulation_optimize(self) -> bool: ...
 
 class ColorConfigClass(gi.Struct):
     @property
@@ -1803,6 +1803,13 @@ class CpuAccelFlags(enum.IntEnum):
     PPC_ALTIVEC = 67108864
 
 class Curve(GObject.Object):
+    @type_check_only
+    class Props(GObject.Object.Props):
+        curve_type: CurveType
+        n_samples: int
+
+    @property
+    def props(self) -> Props: ...
     @classmethod
     def new(cls) -> Curve: ...
     def add_point(self, x: float, y: float) -> int: ...
@@ -1820,13 +1827,6 @@ class Curve(GObject.Object):
     def set_point(self, point: int, x: float, y: float) -> None: ...
     def set_point_type(self, point: int, type: CurvePointType) -> None: ...
     def set_sample(self, x: float, y: float) -> None: ...
-    @type_check_only
-    class Props(GObject.Object.Props):
-        curve_type: CurveType
-        n_samples: int
-
-    @property
-    def props(self) -> Props: ...
 
 class CurveClass(gi.Struct):
     @property
@@ -1848,6 +1848,12 @@ class DesaturateMode(GObject.GEnum):
     VALUE = 4
 
 class Display(GObject.Object):
+    @type_check_only
+    class Props(GObject.Object.Props):
+        id: int
+
+    @property
+    def props(self) -> Props: ...
     @classmethod
     def new(cls, image: Image) -> Display: ...
     @staticmethod
@@ -1861,12 +1867,6 @@ class Display(GObject.Object):
     def get_window_handle(self) -> GLib.Bytes: ...
     def is_valid(self) -> bool: ...
     def present(self) -> bool: ...
-    @type_check_only
-    class Props(GObject.Object.Props):
-        id: int
-
-    @property
-    def props(self) -> Props: ...
 
 class DisplayClass(gi.Struct):
     @property
@@ -1907,6 +1907,12 @@ class DrawableClass(gi.Struct):
     def _gimp_reserved9(self) -> Any: ...
 
 class DrawableFilter(GObject.Object):
+    @type_check_only
+    class Props(GObject.Object.Props):
+        id: int
+
+    @property
+    def props(self) -> Props: ...
     @classmethod
     def new(
         cls, drawable: Drawable, operation_name: str, name: str | None = None
@@ -1937,12 +1943,6 @@ class DrawableFilter(GObject.Object):
     def set_opacity(self, opacity: float) -> None: ...
     def set_visible(self, visible: bool) -> bool: ...
     def update(self) -> None: ...
-    @type_check_only
-    class Props(GObject.Object.Props):
-        id: int
-
-    @property
-    def props(self) -> Props: ...
 
 class DrawableFilterClass(gi.Struct):
     @property
@@ -1998,13 +1998,13 @@ class ExportCapabilities(GObject.GFlags):
     NEEDS_CROP = 1024
 
 class ExportOptions(GObject.Object):
-    def get_image(self, image: Image) -> tuple[ExportReturn, Image]: ...
     @type_check_only
     class Props(GObject.Object.Props):
         capabilities: ExportCapabilities
 
     @property
     def props(self) -> Props: ...
+    def get_image(self, image: Image) -> tuple[ExportReturn, Image]: ...
 
 class ExportOptionsClass(gi.Struct):
     @property
@@ -2031,6 +2031,18 @@ class FileProcedure(Procedure):
     def parent_instance(self) -> Any: ...
 
 class ExportProcedure(FileProcedure):
+    @type_check_only
+    class Props(FileProcedure.Props):
+        capabilities: ExportCapabilities
+        supports_comment: bool
+        supports_exif: bool
+        supports_iptc: bool
+        supports_profile: bool
+        supports_thumbnail: bool
+        supports_xmp: bool
+
+    @property
+    def props(self) -> Props: ...
     @classmethod
     def new(
         cls,
@@ -2074,18 +2086,6 @@ class ExportProcedure(FileProcedure):
     def set_support_profile(self, supports: bool) -> None: ...
     def set_support_thumbnail(self, supports: bool) -> None: ...
     def set_support_xmp(self, supports: bool) -> None: ...
-    @type_check_only
-    class Props(FileProcedure.Props):
-        capabilities: ExportCapabilities
-        supports_comment: bool
-        supports_exif: bool
-        supports_iptc: bool
-        supports_profile: bool
-        supports_thumbnail: bool
-        supports_xmp: bool
-
-    @property
-    def props(self) -> Props: ...
 
 class ExportProcedureClass(gi.Struct):
     @property
@@ -2368,6 +2368,12 @@ class IconType(GObject.GEnum):
     IMAGE_FILE = 2
 
 class Image(GObject.Object):
+    @type_check_only
+    class Props(GObject.Object.Props):
+        id: int
+
+    @property
+    def props(self) -> Props: ...
     @classmethod
     def new(cls, width: int, height: int, type: ImageBaseType) -> Image: ...
     @classmethod
@@ -2591,12 +2597,6 @@ class Image(GObject.Object):
     def undo_is_enabled(self) -> bool: ...
     def undo_thaw(self) -> bool: ...
     def unset_active_channel(self) -> bool: ...
-    @type_check_only
-    class Props(GObject.Object.Props):
-        id: int
-
-    @property
-    def props(self) -> Props: ...
 
 class ImageBaseType(GObject.GEnum):
     RGB = 0
@@ -2985,6 +2985,13 @@ class MetadataSaveFlags(enum.IntFlag):
     UPDATE = 64
 
 class Module(GObject.TypeModule):
+    @type_check_only
+    class Props(GObject.TypeModule.Props):
+        auto_load: bool
+        on_disk: bool
+
+    @property
+    def props(self) -> Props: ...
     @classmethod
     def new(cls, file: Gio.File, auto_load: bool, verbose: bool) -> Module: ...
     @staticmethod
@@ -3005,13 +3012,6 @@ class Module(GObject.TypeModule):
     def do_modified(type, self) -> None: ...
     @property
     def parent_instance(self) -> Any: ...
-    @type_check_only
-    class Props(GObject.TypeModule.Props):
-        auto_load: bool
-        on_disk: bool
-
-    @property
-    def props(self) -> Props: ...
 
 class ModuleClass(gi.Struct):
     @property
@@ -3468,6 +3468,14 @@ class PixbufTransparency(enum.IntEnum):
     LARGE_CHECKS = 2
 
 class PlugIn(GObject.Object):
+    @type_check_only
+    class Props(GObject.Object.Props):
+        program_name: str
+        read_channel: GLib.IOChannel
+        write_channel: GLib.IOChannel
+
+    @property
+    def props(self) -> Props: ...
     @staticmethod
     def directory() -> str: ...
     @staticmethod
@@ -3491,14 +3499,6 @@ class PlugIn(GObject.Object):
     ) -> tuple[bool, str | None, str | None]: ...
     @property
     def parent_instance(self) -> Any: ...
-    @type_check_only
-    class Props(GObject.Object.Props):
-        program_name: str
-        read_channel: GLib.IOChannel
-        write_channel: GLib.IOChannel
-
-    @property
-    def props(self) -> Props: ...
 
 class PlugInClass(gi.Struct):
     @property
@@ -3589,6 +3589,12 @@ class ProcedureClass(gi.Struct):
     def _gimp_reserved9(self) -> Any: ...
 
 class ProcedureConfig(GObject.Object):
+    @type_check_only
+    class Props(GObject.Object.Props):
+        procedure: Procedure
+
+    @property
+    def props(self) -> Props: ...
     def get_choice_id(self, property_name: str) -> int: ...
     def get_color_array(self, property_name: str) -> list[Gegl.Color]: ...
     def get_core_object_array(self, property_name: str) -> list[GObject.Object]: ...
@@ -3600,12 +3606,6 @@ class ProcedureConfig(GObject.Object):
     ) -> None: ...
     @property
     def parent_instance(self) -> Any: ...
-    @type_check_only
-    class Props(GObject.Object.Props):
-        procedure: Procedure
-
-    @property
-    def props(self) -> Props: ...
 
 class ProcedureConfigClass(gi.Struct):
     @property
@@ -3939,6 +3939,17 @@ class TransformResize(GObject.GEnum):
     CROP_WITH_ASPECT = 3
 
 class Unit(GObject.Object):
+    @type_check_only
+    class Props(GObject.Object.Props):
+        abbreviation: str
+        digits: int
+        factor: float
+        id: int
+        name: str
+        symbol: str
+
+    @property
+    def props(self) -> Props: ...
     @classmethod
     def new(
         cls, name: str, factor: float, digits: int, symbol: str, abbreviation: str
@@ -3970,17 +3981,6 @@ class Unit(GObject.Object):
     def is_built_in(self) -> bool: ...
     def is_metric(self) -> bool: ...
     def set_deletion_flag(self, deletion_flag: bool) -> None: ...
-    @type_check_only
-    class Props(GObject.Object.Props):
-        abbreviation: str
-        digits: int
-        factor: float
-        id: int
-        name: str
-        symbol: str
-
-    @property
-    def props(self) -> Props: ...
 
 class UnitClass(gi.Struct):
     @property

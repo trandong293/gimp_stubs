@@ -15,6 +15,12 @@ _namespace: str = "GimpUi"
 _version: str = "3.0"
 
 class Preview(Gtk.Box):
+    @type_check_only
+    class Props(Gtk.Box.Props):
+        update: bool
+
+    @property
+    def props(self) -> Props: ...
     def draw(self) -> None: ...
     def draw_buffer(self, buffer: list[int], rowstride: int) -> None: ...
     def get_area(self) -> PreviewArea: ...
@@ -46,22 +52,16 @@ class Preview(Gtk.Box):
     def do_untransform(type, self, src_x: int, src_y: int) -> tuple[int, int]: ...
     @property
     def parent_instance(self) -> Any: ...
-    @type_check_only
-    class Props(Gtk.Box.Props):
-        update: bool
-
-    @property
-    def props(self) -> Props: ...
 
 class AspectPreview(Preview):
-    @classmethod
-    def new_from_drawable(cls, drawable: Gimp.Drawable) -> Gtk.Widget: ...
     @type_check_only
     class Props(Preview.Props):
         drawable: Gimp.Drawable
 
     @property
     def props(self) -> Props: ...
+    @classmethod
+    def new_from_drawable(cls, drawable: Gimp.Drawable) -> Gtk.Widget: ...
 
 class AspectPreviewClass(gi.Struct):
     @property
@@ -86,6 +86,14 @@ class BrowserClass(gi.Struct):
     def parent_class(self) -> Any: ...
 
 class ResourceChooser(Gtk.Box):
+    @type_check_only
+    class Props(Gtk.Box.Props):
+        label: str
+        resource: Gimp.Resource
+        title: str
+
+    @property
+    def props(self) -> Props: ...
     def get_label(self) -> Gtk.Widget: ...
     def get_resource(self) -> Gimp.Resource: ...
     def set_resource(self, resource: Gimp.Resource) -> None: ...
@@ -95,14 +103,6 @@ class ResourceChooser(Gtk.Box):
     ) -> None: ...
     @property
     def parent_instance(self) -> Any: ...
-    @type_check_only
-    class Props(Gtk.Box.Props):
-        label: str
-        resource: Gimp.Resource
-        title: str
-
-    @property
-    def props(self) -> Props: ...
 
 class BrushChooser(ResourceChooser):
     @classmethod
@@ -118,16 +118,16 @@ class BrushChooserClass(gi.Struct):
     def parent_class(self) -> Any: ...
 
 class BusyBox(Gtk.Box):
-    @classmethod
-    def new(cls, message: str | None = None) -> Gtk.Widget: ...
-    def get_message(self) -> str: ...
-    def set_message(self, message: str) -> None: ...
     @type_check_only
     class Props(Gtk.Box.Props):
         message: str
 
     @property
     def props(self) -> Props: ...
+    @classmethod
+    def new(cls, message: str | None = None) -> Gtk.Widget: ...
+    def get_message(self) -> str: ...
+    def set_message(self, message: str) -> None: ...
 
 class BusyBoxClass(gi.Struct):
     @property
@@ -171,8 +171,6 @@ COLOR_SELECTOR_BAR_SIZE: int = 15
 COLOR_SELECTOR_SIZE: int = 150
 
 class CellRendererColor(Gtk.CellRenderer):
-    @classmethod
-    def new(cls) -> Gtk.CellRenderer: ...
     @type_check_only
     class Props(Gtk.CellRenderer.Props):
         color: Gegl.Color
@@ -181,15 +179,14 @@ class CellRendererColor(Gtk.CellRenderer):
 
     @property
     def props(self) -> Props: ...
+    @classmethod
+    def new(cls) -> Gtk.CellRenderer: ...
 
 class CellRendererColorClass(gi.Struct):
     @property
     def parent_class(self) -> Any: ...
 
 class CellRendererToggle(Gtk.CellRendererToggle):
-    @classmethod
-    def new(cls, icon_name: str) -> Gtk.CellRenderer: ...
-    def clicked(self, path: str, state: Gdk.ModifierType) -> None: ...
     @type_check_only
     class Props(Gtk.CellRendererToggle.Props):
         icon_name: str
@@ -198,12 +195,23 @@ class CellRendererToggle(Gtk.CellRendererToggle):
 
     @property
     def props(self) -> Props: ...
+    @classmethod
+    def new(cls, icon_name: str) -> Gtk.CellRenderer: ...
+    def clicked(self, path: str, state: Gdk.ModifierType) -> None: ...
 
 class CellRendererToggleClass(gi.Struct):
     @property
     def parent_class(self) -> Any: ...
 
 class ChainButton(Gtk.Grid):
+    @type_check_only
+    class Props(Gtk.Grid.Props):
+        active: bool
+        icon_size: bytes
+        position: ChainPosition
+
+    @property
+    def props(self) -> Props: ...
     @classmethod
     def new(cls, position: ChainPosition) -> Gtk.Widget: ...
     def get_active(self) -> bool: ...
@@ -211,14 +219,6 @@ class ChainButton(Gtk.Grid):
     def get_icon_size(self) -> Gtk.IconSize: ...
     def set_active(self, active: bool) -> None: ...
     def set_icon_size(self, size: Gtk.IconSize) -> None: ...
-    @type_check_only
-    class Props(Gtk.Grid.Props):
-        active: bool
-        icon_size: Gtk.IconSize
-        position: ChainPosition
-
-    @property
-    def props(self) -> Props: ...
 
 class ChainButtonClass(gi.Struct):
     @property
@@ -231,6 +231,15 @@ class ChainPosition(GObject.GEnum):
     RIGHT = 3
 
 class IntComboBox(Gtk.ComboBox):
+    @type_check_only
+    class Props(Gtk.ComboBox.Props):
+        ellipsize: bytes
+        label: str
+        layout: IntComboBoxLayout
+        value: int
+
+    @property
+    def props(self) -> Props: ...
     @classmethod
     def new(cls, labels: list[str]) -> Gtk.Widget: ...
     def connect(
@@ -249,15 +258,6 @@ class IntComboBox(Gtk.ComboBox):
     ) -> None: ...
     @property
     def parent_instance(self) -> Any: ...
-    @type_check_only
-    class Props(Gtk.ComboBox.Props):
-        ellipsize: bytes
-        label: str
-        layout: IntComboBoxLayout
-        value: int
-
-    @property
-    def props(self) -> Props: ...
 
 class ChannelComboBox(IntComboBox):
     @classmethod
@@ -268,6 +268,15 @@ class ChannelComboBox(IntComboBox):
     ) -> Gtk.Widget: ...
 
 class ColorArea(Gtk.DrawingArea):
+    @type_check_only
+    class Props(Gtk.DrawingArea.Props):
+        color: Gegl.Color
+        drag_mask: Gdk.ModifierType
+        draw_border: bool
+        type: ColorAreaType
+
+    @property
+    def props(self) -> Props: ...
     @classmethod
     def new(
         cls, color: Gegl.Color, type: ColorAreaType, drag_mask: Gdk.ModifierType
@@ -280,15 +289,6 @@ class ColorArea(Gtk.DrawingArea):
     def set_draw_border(self, draw_border: bool) -> None: ...
     def set_out_of_gamut(self, out_of_gamut: bool) -> None: ...
     def set_type(self, type: ColorAreaType) -> None: ...
-    @type_check_only
-    class Props(Gtk.DrawingArea.Props):
-        color: Gegl.Color
-        drag_mask: Gdk.ModifierType
-        draw_border: bool
-        type: ColorAreaType
-
-    @property
-    def props(self) -> Props: ...
 
 class ColorAreaClass(gi.Struct):
     @property
@@ -300,6 +300,18 @@ class ColorAreaType(GObject.GEnum):
     LARGE_CHECKS = 2
 
 class ColorButton(Button):
+    @type_check_only
+    class Props(Button.Props):
+        area_height: int
+        area_width: int
+        color: Gegl.Color
+        color_config: Gimp.ColorConfig
+        continuous_update: bool
+        title: str
+        type: ColorAreaType
+
+    @property
+    def props(self) -> Props: ...
     @classmethod
     def new(
         cls, title: str, width: int, height: int, color: Gegl.Color, type: ColorAreaType
@@ -318,18 +330,6 @@ class ColorButton(Button):
     def do_get_action_type(type, self) -> GObject.GType: ...
     @property
     def parent_instance(self) -> Any: ...
-    @type_check_only
-    class Props(Button.Props):
-        area_height: int
-        area_width: int
-        color: Gegl.Color
-        color_config: Gimp.ColorConfig
-        continuous_update: bool
-        title: str
-        type: ColorAreaType
-
-    @property
-    def props(self) -> Props: ...
 
 class ColorButtonClass(gi.Struct):
     @property
@@ -360,6 +360,14 @@ class ColorButtonClass(gi.Struct):
     def _gimp_reserved9(self) -> Any: ...
 
 class ColorDisplay(GObject.Object, Gimp.ConfigInterface):
+    @type_check_only
+    class Props(GObject.Object.Props):
+        color_config: Gimp.ColorConfig
+        color_managed: Gimp.ColorManaged
+        enabled: bool
+
+    @property
+    def props(self) -> Props: ...
     def changed(self) -> None: ...
     def clone(self) -> ColorDisplay: ...
     def configure(self) -> Gtk.Widget: ...
@@ -378,14 +386,6 @@ class ColorDisplay(GObject.Object, Gimp.ConfigInterface):
     ) -> None: ...
     @property
     def parent_instance(self) -> Any: ...
-    @type_check_only
-    class Props(GObject.Object.Props):
-        color_config: Gimp.ColorConfig
-        color_managed: Gimp.ColorManaged
-        enabled: bool
-
-    @property
-    def props(self) -> Props: ...
 
 class ColorDisplayClass(gi.Struct):
     @property
@@ -523,6 +523,13 @@ class ColorProfileChooserDialogClass(gi.Struct):
     def parent_class(self) -> Any: ...
 
 class ColorProfileComboBox(Gtk.ComboBox):
+    @type_check_only
+    class Props(Gtk.ComboBox.Props):
+        dialog: Gtk.Dialog
+        model: ColorProfileStore
+
+    @property
+    def props(self) -> Props: ...
     @classmethod
     def new(cls, dialog: Gtk.Widget, history: Gio.File) -> Gtk.Widget: ...
     @classmethod
@@ -531,28 +538,21 @@ class ColorProfileComboBox(Gtk.ComboBox):
     def get_active_file(self) -> Gio.File: ...
     def set_active_file(self, file: Gio.File, label: str) -> None: ...
     def set_active_profile(self, profile: Gimp.ColorProfile) -> None: ...
-    @type_check_only
-    class Props(Gtk.ComboBox.Props):
-        dialog: Gtk.Dialog
-        model: ColorProfileStore
-
-    @property
-    def props(self) -> Props: ...
 
 class ColorProfileComboBoxClass(gi.Struct):
     @property
     def parent_class(self) -> Any: ...
 
 class ColorProfileStore(Gtk.ListStore):
-    @classmethod
-    def new(cls, history: Gio.File) -> Gtk.ListStore: ...
-    def add_file(self, file: Gio.File, label: str) -> None: ...
     @type_check_only
     class Props(Gtk.ListStore.Props):
         history: Gio.File
 
     @property
     def props(self) -> Props: ...
+    @classmethod
+    def new(cls, history: Gio.File) -> Gtk.ListStore: ...
+    def add_file(self, file: Gio.File, label: str) -> None: ...
 
 class ColorProfileStoreClass(gi.Struct):
     @property
@@ -569,6 +569,12 @@ class ColorProfileViewClass(gi.Struct):
     def parent_class(self) -> Any: ...
 
 class ColorScale(Gtk.Scale):
+    @type_check_only
+    class Props(Gtk.Scale.Props):
+        channel: ColorSelectorChannel
+
+    @property
+    def props(self) -> Props: ...
     @classmethod
     def new(
         cls, orientation: Gtk.Orientation, channel: ColorSelectorChannel
@@ -577,32 +583,35 @@ class ColorScale(Gtk.Scale):
     def set_color(self, color: Gegl.Color) -> None: ...
     def set_color_config(self, config: Gimp.ColorConfig) -> None: ...
     def set_format(self, format: Babl.Object) -> None: ...
-    @type_check_only
-    class Props(Gtk.Scale.Props):
-        channel: ColorSelectorChannel
-
-    @property
-    def props(self) -> Props: ...
 
 class ColorScaleClass(gi.Struct):
     @property
     def parent_class(self) -> Any: ...
 
 class Labeled(Gtk.Grid):
-    def get_label(self) -> Gtk.Label: ...
-    def get_text(self) -> str: ...
-    def set_text(self, text: str) -> None: ...
-    def do_mnemonic_widget_changed(type, self, widget: Gtk.Widget) -> None: ...
-    @property
-    def parent_instance(self) -> Any: ...
     @type_check_only
     class Props(Gtk.Grid.Props):
         label: str
 
     @property
     def props(self) -> Props: ...
+    def get_label(self) -> Gtk.Label: ...
+    def get_text(self) -> str: ...
+    def set_text(self, text: str) -> None: ...
+    def do_mnemonic_widget_changed(type, self, widget: Gtk.Widget) -> None: ...
+    @property
+    def parent_instance(self) -> Any: ...
 
 class LabelSpin(Labeled):
+    @type_check_only
+    class Props(Labeled.Props):
+        digits: int
+        lower: float
+        upper: float
+        value: float
+
+    @property
+    def props(self) -> Props: ...
     @classmethod
     def new(
         cls, text: str, value: float, lower: float, upper: float, digits: int
@@ -615,15 +624,6 @@ class LabelSpin(Labeled):
     def do_value_changed(type, self) -> None: ...
     @property
     def parent_instance(self) -> Any: ...
-    @type_check_only
-    class Props(Labeled.Props):
-        digits: int
-        lower: float
-        upper: float
-        value: float
-
-    @property
-    def props(self) -> Props: ...
 
 class ScaleEntry(LabelSpin):
     @classmethod
@@ -648,8 +648,6 @@ class ColorScaleEntryClass(gi.Struct):
     def parent_class(self) -> Any: ...
 
 class ColorScales(ColorSelector):
-    def get_show_rgb_u8(self) -> bool: ...
-    def set_show_rgb_u8(self, show_rgb_u8: bool) -> None: ...
     @type_check_only
     class Props(ColorSelector.Props):
         show_hsv: bool
@@ -657,6 +655,8 @@ class ColorScales(ColorSelector):
 
     @property
     def props(self) -> Props: ...
+    def get_show_rgb_u8(self) -> bool: ...
+    def set_show_rgb_u8(self, show_rgb_u8: bool) -> None: ...
 
 class ColorScalesClass(gi.Struct):
     @property
@@ -670,6 +670,12 @@ class ColorSelectClass(gi.Struct):
     def parent_class(self) -> Any: ...
 
 class ColorSelection(Gtk.Box):
+    @type_check_only
+    class Props(Gtk.Box.Props):
+        config: Gimp.ColorConfig
+
+    @property
+    def props(self) -> Props: ...
     @classmethod
     def new(cls) -> Gtk.Widget: ...
     def color_changed(self) -> None: ...
@@ -687,12 +693,6 @@ class ColorSelection(Gtk.Box):
     def set_simulation(
         self, profile: Gimp.ColorProfile, intent: Gimp.ColorRenderingIntent, bpc: bool
     ) -> None: ...
-    @type_check_only
-    class Props(Gtk.Box.Props):
-        config: Gimp.ColorConfig
-
-    @property
-    def props(self) -> Props: ...
 
 class ColorSelectionClass(gi.Struct):
     @property
@@ -775,12 +775,6 @@ class Controller(gi.Struct):
     pass
 
 class Dialog(Gtk.Dialog):
-    def add_button(self, button_text: str, response_id: int) -> Gtk.Widget: ...
-    def get_native_handle(self) -> GLib.Bytes: ...
-    def run(self) -> int: ...
-    def set_alternative_button_order_from_array(self, order: list[int]) -> None: ...
-    @property
-    def parent_instance(self) -> Any: ...
     @type_check_only
     class Props(Gtk.Dialog.Props):
         help_func: bytes
@@ -789,6 +783,12 @@ class Dialog(Gtk.Dialog):
 
     @property
     def props(self) -> Props: ...
+    def add_button(self, button_text: str, response_id: int) -> Gtk.Widget: ...
+    def get_native_handle(self) -> GLib.Bytes: ...
+    def run(self) -> int: ...
+    def set_alternative_button_order_from_array(self, order: list[int]) -> None: ...
+    @property
+    def parent_instance(self) -> Any: ...
 
 class DialogClass(gi.Struct):
     @property
@@ -815,6 +815,15 @@ class DialogClass(gi.Struct):
     def _gimp_reserved9(self) -> Any: ...
 
 class DrawableChooser(Gtk.Box):
+    @type_check_only
+    class Props(Gtk.Box.Props):
+        drawable: Gimp.Drawable
+        drawable_type: bytes
+        label: str
+        title: str
+
+    @property
+    def props(self) -> Props: ...
     @classmethod
     def new(
         cls,
@@ -826,15 +835,6 @@ class DrawableChooser(Gtk.Box):
     def get_drawable(self) -> Gimp.Drawable: ...
     def get_label(self) -> Gtk.Widget: ...
     def set_drawable(self, drawable: Gimp.Drawable) -> None: ...
-    @type_check_only
-    class Props(Gtk.Box.Props):
-        drawable: Gimp.Drawable
-        drawable_type: bytes
-        label: str
-        title: str
-
-    @property
-    def props(self) -> Props: ...
 
 class DrawableChooserClass(gi.Struct):
     @property
@@ -860,21 +860,27 @@ class ScrolledPreview(Preview):
     def parent_instance(self) -> Any: ...
 
 class DrawablePreview(ScrolledPreview):
-    @classmethod
-    def new_from_drawable(cls, drawable: Gimp.Drawable) -> Gtk.Widget: ...
-    def get_drawable(self) -> Gimp.Drawable: ...
     @type_check_only
     class Props(ScrolledPreview.Props):
         drawable: Gimp.Drawable
 
     @property
     def props(self) -> Props: ...
+    @classmethod
+    def new_from_drawable(cls, drawable: Gimp.Drawable) -> Gtk.Widget: ...
+    def get_drawable(self) -> Gimp.Drawable: ...
 
 class DrawablePreviewClass(gi.Struct):
     @property
     def parent_class(self) -> Any: ...
 
 class EnumComboBox(IntComboBox):
+    @type_check_only
+    class Props(IntComboBox.Props):
+        model: EnumStore
+
+    @property
+    def props(self) -> Props: ...
     @classmethod
     def new(cls, enum_type: GObject.GType) -> Gtk.Widget: ...
     @classmethod
@@ -882,12 +888,6 @@ class EnumComboBox(IntComboBox):
     def set_icon_prefix(self, icon_prefix: str) -> None: ...
     @property
     def parent_instance(self) -> Any: ...
-    @type_check_only
-    class Props(IntComboBox.Props):
-        model: EnumStore
-
-    @property
-    def props(self) -> Props: ...
 
 class EnumComboBoxClass(gi.Struct):
     @property
@@ -914,9 +914,6 @@ class EnumComboBoxClass(gi.Struct):
     def _gimp_reserved9(self) -> Any: ...
 
 class EnumLabel(Gtk.Label):
-    @classmethod
-    def new(cls, enum_type: GObject.GType, value: int) -> Gtk.Widget: ...
-    def set_value(self, value: int) -> None: ...
     @type_check_only
     class Props(Gtk.Label.Props):
         enum_type: bytes
@@ -924,12 +921,21 @@ class EnumLabel(Gtk.Label):
 
     @property
     def props(self) -> Props: ...
+    @classmethod
+    def new(cls, enum_type: GObject.GType, value: int) -> Gtk.Widget: ...
+    def set_value(self, value: int) -> None: ...
 
 class EnumLabelClass(gi.Struct):
     @property
     def parent_class(self) -> Any: ...
 
 class IntStore(Gtk.ListStore):
+    @type_check_only
+    class Props(Gtk.ListStore.Props):
+        user_data_type: bytes
+
+    @property
+    def props(self) -> Props: ...
     @classmethod
     def new(cls, labels: list[str]) -> Gtk.ListStore: ...
     @staticmethod
@@ -942,14 +948,14 @@ class IntStore(Gtk.ListStore):
     ) -> tuple[bool, Gtk.TreeIter]: ...
     @property
     def parent_instance(self) -> Any: ...
+
+class EnumStore(IntStore):
     @type_check_only
-    class Props(Gtk.ListStore.Props):
-        user_data_type: bytes
+    class Props(IntStore.Props):
+        enum_type: bytes
 
     @property
     def props(self) -> Props: ...
-
-class EnumStore(IntStore):
     @classmethod
     def new(cls, enum_type: GObject.GType) -> Gtk.ListStore: ...
     @classmethod
@@ -957,18 +963,19 @@ class EnumStore(IntStore):
         cls, enum_type: GObject.GType, minimum: int, maximum: int
     ) -> Gtk.ListStore: ...
     def set_icon_prefix(self, icon_prefix: str) -> None: ...
-    @type_check_only
-    class Props(IntStore.Props):
-        enum_type: bytes
-
-    @property
-    def props(self) -> Props: ...
 
 class EnumStoreClass(gi.Struct):
     @property
     def parent_class(self) -> Any: ...
 
 class ProcedureDialog(Dialog):
+    @type_check_only
+    class Props(Dialog.Props):
+        config: Gimp.ProcedureConfig
+        procedure: Gimp.Procedure
+
+    @property
+    def props(self) -> Props: ...
     @classmethod
     def new(
         cls,
@@ -1070,13 +1077,6 @@ class ProcedureDialog(Dialog):
     ) -> None: ...
     @property
     def parent_instance(self) -> Any: ...
-    @type_check_only
-    class Props(Dialog.Props):
-        config: Gimp.ProcedureConfig
-        procedure: Gimp.Procedure
-
-    @property
-    def props(self) -> Props: ...
 
 class ExportProcedureDialog(ProcedureDialog):
     @classmethod
@@ -1093,6 +1093,15 @@ class ExportProcedureDialogClass(gi.Struct):
     def parent_class(self) -> Any: ...
 
 class FileChooser(Gtk.Box):
+    @type_check_only
+    class Props(Gtk.Box.Props):
+        action: Gimp.FileChooserAction
+        file: Gio.File
+        label: str
+        title: str
+
+    @property
+    def props(self) -> Props: ...
     @classmethod
     def new(
         cls,
@@ -1110,15 +1119,6 @@ class FileChooser(Gtk.Box):
     def set_file(self, file: Gio.File) -> None: ...
     def set_label(self, text: str | None = None) -> None: ...
     def set_title(self, text: str | None = None) -> None: ...
-    @type_check_only
-    class Props(Gtk.Box.Props):
-        action: Gimp.FileChooserAction
-        file: Gio.File
-        label: str
-        title: str
-
-    @property
-    def props(self) -> Props: ...
 
 class FileChooserClass(gi.Struct):
     @property
@@ -1184,8 +1184,6 @@ class GradientChooserClass(gi.Struct):
     def parent_class(self) -> Any: ...
 
 class HintBox(Gtk.Box):
-    @classmethod
-    def new(cls, hint: str) -> Gtk.Widget: ...
     @type_check_only
     class Props(Gtk.Box.Props):
         hint: str
@@ -1193,6 +1191,8 @@ class HintBox(Gtk.Box):
 
     @property
     def props(self) -> Props: ...
+    @classmethod
+    def new(cls, hint: str) -> Gtk.Widget: ...
 
 class HintBoxClass(gi.Struct):
     @property
@@ -1517,6 +1517,14 @@ ICON_ZOOM_ORIGINAL: str = "zoom-original"
 ICON_ZOOM_OUT: str = "zoom-out"
 
 class ImageChooser(Gtk.Box):
+    @type_check_only
+    class Props(Gtk.Box.Props):
+        image: Gimp.Image
+        label: str
+        title: str
+
+    @property
+    def props(self) -> Props: ...
     @classmethod
     def new(
         cls,
@@ -1527,14 +1535,6 @@ class ImageChooser(Gtk.Box):
     def get_image(self) -> Gimp.Image: ...
     def get_label(self) -> Gtk.Widget: ...
     def set_image(self, image: Gimp.Image) -> None: ...
-    @type_check_only
-    class Props(Gtk.Box.Props):
-        image: Gimp.Image
-        label: str
-        title: str
-
-    @property
-    def props(self) -> Props: ...
 
 class ImageChooserClass(gi.Struct):
     @property
@@ -1580,6 +1580,13 @@ class IntComboBoxLayout(GObject.GEnum):
     FULL = 2
 
 class IntRadioFrame(Frame):
+    @type_check_only
+    class Props(Frame.Props):
+        store: IntStore
+        value: int
+
+    @property
+    def props(self) -> Props: ...
     @classmethod
     def new(cls, labels: list[str]) -> Gtk.Widget: ...
     @classmethod
@@ -1594,13 +1601,6 @@ class IntRadioFrame(Frame):
         data: Any = None,
     ) -> None: ...
     def set_title(self, title: str, with_mnemonic: bool) -> None: ...
-    @type_check_only
-    class Props(Frame.Props):
-        store: IntStore
-        value: int
-
-    @property
-    def props(self) -> Props: ...
 
 class IntRadioFrameClass(gi.Struct):
     @property
@@ -1640,6 +1640,15 @@ class IntStoreColumns(enum.IntEnum):
     NUM_COLUMNS = 6
 
 class ItemChooser(Gtk.Box):
+    @type_check_only
+    class Props(Gtk.Box.Props):
+        item: Gimp.Item
+        item_type: bytes
+        label: str
+        title: str
+
+    @property
+    def props(self) -> Props: ...
     @classmethod
     def new(
         cls,
@@ -1651,28 +1660,12 @@ class ItemChooser(Gtk.Box):
     def get_item(self) -> Gimp.Item: ...
     def get_label(self) -> Gtk.Widget: ...
     def set_item(self, item: Gimp.Item) -> None: ...
-    @type_check_only
-    class Props(Gtk.Box.Props):
-        item: Gimp.Item
-        item_type: bytes
-        label: str
-        title: str
-
-    @property
-    def props(self) -> Props: ...
 
 class ItemChooserClass(gi.Struct):
     @property
     def parent_class(self) -> Any: ...
 
 class LabelColor(Labeled):
-    @classmethod
-    def new(cls, label: str, color: Gegl.Color, editable: bool) -> Gtk.Widget: ...
-    def get_color_widget(self) -> Gtk.Widget: ...
-    def get_value(self) -> Gegl.Color: ...
-    def is_editable(self) -> bool: ...
-    def set_editable(self, editable: bool) -> None: ...
-    def set_value(self, value: Gegl.Color) -> None: ...
     @type_check_only
     class Props(Labeled.Props):
         editable: bool
@@ -1680,32 +1673,36 @@ class LabelColor(Labeled):
 
     @property
     def props(self) -> Props: ...
+    @classmethod
+    def new(cls, label: str, color: Gegl.Color, editable: bool) -> Gtk.Widget: ...
+    def get_color_widget(self) -> Gtk.Widget: ...
+    def get_value(self) -> Gegl.Color: ...
+    def is_editable(self) -> bool: ...
+    def set_editable(self, editable: bool) -> None: ...
+    def set_value(self, value: Gegl.Color) -> None: ...
 
 class LabelColorClass(gi.Struct):
     @property
     def parent_class(self) -> Any: ...
 
 class LabelEntry(Labeled):
-    @classmethod
-    def new(cls, label: str) -> Gtk.Widget: ...
-    def get_entry(self) -> Gtk.Widget: ...
-    def get_value(self) -> str: ...
-    def set_value(self, value: str) -> None: ...
     @type_check_only
     class Props(Labeled.Props):
         value: str
 
     @property
     def props(self) -> Props: ...
+    @classmethod
+    def new(cls, label: str) -> Gtk.Widget: ...
+    def get_entry(self) -> Gtk.Widget: ...
+    def get_value(self) -> str: ...
+    def set_value(self, value: str) -> None: ...
 
 class LabelEntryClass(gi.Struct):
     @property
     def parent_class(self) -> Any: ...
 
 class LabelIntWidget(Labeled):
-    @classmethod
-    def new(cls, text: str, widget: Gtk.Widget) -> Gtk.Widget: ...
-    def get_widget(self) -> Gtk.Widget: ...
     @type_check_only
     class Props(Labeled.Props):
         value: int
@@ -1713,6 +1710,9 @@ class LabelIntWidget(Labeled):
 
     @property
     def props(self) -> Props: ...
+    @classmethod
+    def new(cls, text: str, widget: Gtk.Widget) -> Gtk.Widget: ...
+    def get_widget(self) -> Gtk.Widget: ...
 
 class LabelIntWidgetClass(gi.Struct):
     @property
@@ -1745,9 +1745,6 @@ class LabelSpinClass(gi.Struct):
     def _gimp_reserved9(self) -> Any: ...
 
 class LabelStringWidget(Labeled):
-    @classmethod
-    def new(cls, text: str, widget: Gtk.Widget) -> Gtk.Widget: ...
-    def get_widget(self) -> Gtk.Widget: ...
     @type_check_only
     class Props(Labeled.Props):
         value: str
@@ -1755,6 +1752,9 @@ class LabelStringWidget(Labeled):
 
     @property
     def props(self) -> Props: ...
+    @classmethod
+    def new(cls, text: str, widget: Gtk.Widget) -> Gtk.Widget: ...
+    def get_widget(self) -> Gtk.Widget: ...
 
 class LabelStringWidgetClass(gi.Struct):
     @property
@@ -1808,6 +1808,23 @@ class MemsizeEntryClass(gi.Struct):
     def parent_class(self) -> Any: ...
 
 class NumberPairEntry(Gtk.Entry):
+    @type_check_only
+    class Props(Gtk.Entry.Props):
+        allow_simplification: bool
+        aspect: AspectType
+        default_left_number: float
+        default_right_number: float
+        default_text: str
+        left_number: float
+        max_valid_value: float
+        min_valid_value: float
+        ratio: float
+        right_number: float
+        separators: str
+        user_override: bool
+
+    @property
+    def props(self) -> Props: ...
     @classmethod
     def new(
         cls,
@@ -1828,23 +1845,6 @@ class NumberPairEntry(Gtk.Entry):
     def set_ratio(self, ratio: float) -> None: ...
     def set_user_override(self, user_override: bool) -> None: ...
     def set_values(self, left: float, right: float) -> None: ...
-    @type_check_only
-    class Props(Gtk.Entry.Props):
-        allow_simplification: bool
-        aspect: AspectType
-        default_left_number: float
-        default_right_number: float
-        default_text: str
-        left_number: float
-        max_valid_value: float
-        min_valid_value: float
-        ratio: float
-        right_number: float
-        separators: str
-        user_override: bool
-
-    @property
-    def props(self) -> Props: ...
 
 class NumberPairEntryClass(gi.Struct):
     @property
@@ -1862,6 +1862,13 @@ class OffsetAreaClass(gi.Struct):
     def parent_class(self) -> Any: ...
 
 class PageSelector(Gtk.Box):
+    @type_check_only
+    class Props(Gtk.Box.Props):
+        n_pages: int
+        target: PageSelectorTarget
+
+    @property
+    def props(self) -> Props: ...
     @classmethod
     def new(cls) -> Gtk.Widget: ...
     def get_n_pages(self) -> int: ...
@@ -1880,13 +1887,6 @@ class PageSelector(Gtk.Box):
     def set_target(self, target: PageSelectorTarget) -> None: ...
     def unselect_all(self) -> None: ...
     def unselect_page(self, page_no: int) -> None: ...
-    @type_check_only
-    class Props(Gtk.Box.Props):
-        n_pages: int
-        target: PageSelectorTarget
-
-    @property
-    def props(self) -> Props: ...
 
 class PageSelectorClass(gi.Struct):
     @property
@@ -1978,6 +1978,15 @@ class PickButtonClass(gi.Struct):
     def _gimp_reserved9(self) -> Any: ...
 
 class PreviewArea(Gtk.DrawingArea):
+    @type_check_only
+    class Props(Gtk.DrawingArea.Props):
+        check_custom_color1: Gegl.Color
+        check_custom_color2: Gegl.Color
+        check_size: Gimp.CheckSize
+        check_type: Gimp.CheckType
+
+    @property
+    def props(self) -> Props: ...
     @classmethod
     def new(cls) -> Gtk.Widget: ...
     def blend(
@@ -2027,15 +2036,6 @@ class PreviewArea(Gtk.DrawingArea):
     def set_colormap(self, colormap: list[int], num_colors: int) -> None: ...
     def set_max_size(self, width: int, height: int) -> None: ...
     def set_offsets(self, x: int, y: int) -> None: ...
-    @type_check_only
-    class Props(Gtk.DrawingArea.Props):
-        check_custom_color1: Gegl.Color
-        check_custom_color2: Gegl.Color
-        check_size: Gimp.CheckSize
-        check_type: Gimp.CheckType
-
-    @property
-    def props(self) -> Props: ...
 
 class PreviewAreaClass(gi.Struct):
     @property
@@ -2137,16 +2137,6 @@ class ResourceChooserClass(gi.Struct):
     def padding(self) -> Any: ...
 
 class Ruler(Gtk.Widget):
-    @classmethod
-    def new(cls, orientation: Gtk.Orientation) -> Gtk.Widget: ...
-    def add_track_widget(self, widget: Gtk.Widget) -> None: ...
-    def get_position(self) -> float: ...
-    def get_range(self) -> tuple[float, float, float]: ...
-    def get_unit(self) -> Gimp.Unit: ...
-    def remove_track_widget(self, widget: Gtk.Widget) -> None: ...
-    def set_position(self, position: float) -> None: ...
-    def set_range(self, lower: float, upper: float, max_size: float) -> None: ...
-    def set_unit(self, unit: Gimp.Unit) -> None: ...
     @type_check_only
     class Props(Gtk.Widget.Props):
         lower: float
@@ -2158,6 +2148,16 @@ class Ruler(Gtk.Widget):
 
     @property
     def props(self) -> Props: ...
+    @classmethod
+    def new(cls, orientation: Gtk.Orientation) -> Gtk.Widget: ...
+    def add_track_widget(self, widget: Gtk.Widget) -> None: ...
+    def get_position(self) -> float: ...
+    def get_range(self) -> tuple[float, float, float]: ...
+    def get_unit(self) -> Gimp.Unit: ...
+    def remove_track_widget(self, widget: Gtk.Widget) -> None: ...
+    def set_position(self, position: float) -> None: ...
+    def set_range(self, lower: float, upper: float, max_size: float) -> None: ...
+    def set_unit(self, unit: Gimp.Unit) -> None: ...
 
 class RulerClass(gi.Struct):
     @property
@@ -2300,6 +2300,12 @@ class SpinButtonClass(gi.Struct):
     def _gimp_reserved9(self) -> Any: ...
 
 class SpinScale(SpinButton):
+    @type_check_only
+    class Props(SpinButton.Props):
+        label: str
+
+    @property
+    def props(self) -> Props: ...
     @classmethod
     def new(cls, adjustment: Gtk.Adjustment, label: str, digits: int) -> Gtk.Widget: ...
     def get_constrain_drag(self) -> bool: ...
@@ -2312,18 +2318,21 @@ class SpinScale(SpinButton):
     def set_label(self, label: str) -> None: ...
     def set_scale_limits(self, lower: float, upper: float) -> None: ...
     def unset_scale_limits(self) -> None: ...
-    @type_check_only
-    class Props(SpinButton.Props):
-        label: str
-
-    @property
-    def props(self) -> Props: ...
 
 class SpinScaleClass(gi.Struct):
     @property
     def parent_class(self) -> Any: ...
 
 class StringComboBox(Gtk.ComboBox):
+    @type_check_only
+    class Props(Gtk.ComboBox.Props):
+        ellipsize: bytes
+        id_column: int
+        label_column: int
+        value: str
+
+    @property
+    def props(self) -> Props: ...
     @classmethod
     def new(
         cls, model: Gtk.TreeModel, id_column: int, label_column: int
@@ -2335,15 +2344,6 @@ class StringComboBox(Gtk.ComboBox):
     ) -> None: ...
     @property
     def parent_instance(self) -> Any: ...
-    @type_check_only
-    class Props(Gtk.ComboBox.Props):
-        ellipsize: bytes
-        id_column: int
-        label_column: int
-        value: str
-
-    @property
-    def props(self) -> Props: ...
 
 class StringComboBoxClass(gi.Struct):
     @property
@@ -2382,6 +2382,16 @@ class UnitComboBoxClass(gi.Struct):
     def parent_class(self) -> Any: ...
 
 class UnitStore(GObject.Object, Gtk.TreeModel):
+    @type_check_only
+    class Props(GObject.Object.Props):
+        has_percent: bool
+        has_pixels: bool
+        long_format: str
+        num_values: int
+        short_format: str
+
+    @property
+    def props(self) -> Props: ...
     @classmethod
     def new(cls, num_values: int) -> UnitStore: ...
     def get_has_percent(self) -> bool: ...
@@ -2393,16 +2403,6 @@ class UnitStore(GObject.Object, Gtk.TreeModel):
     def set_resolution(self, index: int, resolution: float) -> None: ...
     @property
     def parent_instance(self) -> Any: ...
-    @type_check_only
-    class Props(GObject.Object.Props):
-        has_percent: bool
-        has_pixels: bool
-        long_format: str
-        num_values: int
-        short_format: str
-
-    @property
-    def props(self) -> Props: ...
 
 class UnitStoreClass(gi.Struct):
     @property
@@ -2446,14 +2446,6 @@ class WidgetsError(enum.IntEnum):
     WIDGETS_PARSE_ERROR = 0
 
 class ZoomModel(GObject.Object):
-    @classmethod
-    def new(cls) -> ZoomModel: ...
-    @staticmethod
-    def zoom_step(zoom_type: ZoomType, scale: float, delta: float) -> float: ...
-    def get_factor(self) -> float: ...
-    def get_fraction(self) -> tuple[int, int]: ...
-    def set_range(self, min: float, max: float) -> None: ...
-    def zoom(self, zoom_type: ZoomType, scale: float) -> None: ...
     @type_check_only
     class Props(GObject.Object.Props):
         fraction: str
@@ -2464,12 +2456,27 @@ class ZoomModel(GObject.Object):
 
     @property
     def props(self) -> Props: ...
+    @classmethod
+    def new(cls) -> ZoomModel: ...
+    @staticmethod
+    def zoom_step(zoom_type: ZoomType, scale: float, delta: float) -> float: ...
+    def get_factor(self) -> float: ...
+    def get_fraction(self) -> tuple[int, int]: ...
+    def set_range(self, min: float, max: float) -> None: ...
+    def zoom(self, zoom_type: ZoomType, scale: float) -> None: ...
 
 class ZoomModelClass(gi.Struct):
     @property
     def parent_class(self) -> Any: ...
 
 class ZoomPreview(ScrolledPreview):
+    @type_check_only
+    class Props(ScrolledPreview.Props):
+        drawable: Gimp.Drawable
+        model: ZoomModel
+
+    @property
+    def props(self) -> Props: ...
     @classmethod
     def new_from_drawable(cls, drawable: Gimp.Drawable) -> Gtk.Widget: ...
     @classmethod
@@ -2480,13 +2487,6 @@ class ZoomPreview(ScrolledPreview):
     def get_factor(self) -> float: ...
     def get_model(self) -> ZoomModel: ...
     def get_source(self) -> tuple[list[int], int, int, int]: ...
-    @type_check_only
-    class Props(ScrolledPreview.Props):
-        drawable: Gimp.Drawable
-        model: ZoomModel
-
-    @property
-    def props(self) -> Props: ...
 
 class ZoomPreviewClass(gi.Struct):
     @property

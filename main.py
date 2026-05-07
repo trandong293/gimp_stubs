@@ -142,11 +142,6 @@ def get_str_introspection(parent: Any, num_space: int = 0) -> str:
         if typ in [gi.types.StructMeta, gi.types.GObjectMeta]:
             bases = get_str_bases(child.__bases__)
             s_intros.append("class %s(%s):" % (name, bases))
-            s_class_content = get_str_introspection(child, num_space + 1)
-            if s_class_content == "":
-                s_intros.append("%spass" % SPACE)
-            else:
-                s_intros.append(s_class_content)
             # properties:
             # @type_check_only
             # class Props(base.Props):
@@ -154,7 +149,7 @@ def get_str_introspection(parent: Any, num_space: int = 0) -> str:
             #   ...
             # @property
             # def props(self) -> Props: ...
-            s_has_props = []
+            s_props_exist = []
             if hasattr(child, "props"):
                 props = getattr(child, "props")
                 s_props = []
@@ -168,15 +163,22 @@ def get_str_introspection(parent: Any, num_space: int = 0) -> str:
                         s_type = get_str_short_type(prop_type)
                         s_props.append(SPACE + "%s: %s" % (name, s_type))
                 if len(s_props):
-                    s_has_props.append("@type_check_only")
-                    s_has_props.append(
+                    s_props_exist.append("@type_check_only")
+                    s_props_exist.append(
                         "class Props(%s.Props):" % get_str_short_type(child.__base__)
                     )
-                    s_has_props.extend(s_props)
-                    s_has_props.append("@property")
-                    s_has_props.append("def props(self) -> Props: ...")
-            s_has_props = [SPACE + s_has_prop for s_has_prop in s_has_props]
-            s_intros.extend(s_has_props)
+                    s_props_exist.extend(s_props)
+                    s_props_exist.append("@property")
+                    s_props_exist.append("def props(self) -> Props: ...")
+            s_props_exist = [SPACE + s_has_prop for s_has_prop in s_props_exist]
+            s_intros.extend(s_props_exist)
+
+            # others
+            s_class_content = get_str_introspection(child, num_space + 1)
+            if s_class_content != "":
+                s_intros.append(s_class_content)
+            elif s_props_exist == []:
+                s_intros.append(SPACE + "pass")
             continue
 
         print("[MISSING]", name, child, typ)
