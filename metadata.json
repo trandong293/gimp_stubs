@@ -1,0 +1,51 @@
+{
+    "Gimp": {
+        "imports": [
+            "import collections",
+            "import enum",
+            "import typing",
+            "from typing import Any, type_check_only",
+            "import cairo",
+            "import gi",
+            "from gi.repository import GdkPixbuf, GExiv2, Gio, GLib, GObject, Pango",
+            "import Babl",
+            "import Gegl"
+        ],
+        "version": "3.0"
+    },
+    "GimpUi": {
+        "imports": [
+            "import collections",
+            "import enum",
+            "import typing",
+            "from typing import Any, type_check_only",
+            "import cairo",
+            "import gi",
+            "from gi.repository import Gdk, GdkPixbuf, Gio, GLib, GObject, Gtk, Pango",
+            "import Babl",
+            "import Gegl",
+            "import Gimp"
+        ],
+        "version": "3.0"
+    },
+    "Babl": {
+        "imports": [
+            "import enum",
+            "from typing import Any",
+            "import gi"
+        ],
+        "version": "0.1"
+    },
+    "Gegl": {
+        "imports": [
+            "import collections",
+            "import enum",
+            "import typing",
+            "from typing import Any, type_check_only",
+            "import gi",
+            "from gi.repository import GLib, GObject",
+            "import Babl"
+        ],
+        "version": "0.4"
+    }
+}

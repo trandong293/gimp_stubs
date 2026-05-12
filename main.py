@@ -1,69 +1,18 @@
 import enum
 import importlib
 import inspect
+import json
+import sys
 from typing import Any
+from xml.etree.ElementTree import Element
 
 import gi
-from gi.repository import GObject
 
-SPACE = 4 * " "
+import util
+
 CONTEXT = ""
-# https://stackoverflow.com/a/78306153/16187830
-GTYPE_TO_PYTHON = {
-    GObject.type_from_name(GObject.type_name(ptype)): ptype
-    for ptype in (int, float, str, bool, object)
-}
-METADATA = {
-    "Gimp": {
-        "imports": [
-            "import collections",
-            "import enum",
-            "import typing",
-            "from typing import Any, type_check_only",
-            "import cairo",
-            "import gi",
-            "from gi.repository import GdkPixbuf, GExiv2, Gio, GLib, GObject, Pango",
-            "import Babl",
-            "import Gegl",
-        ],
-        "version": "3.0",
-    },
-    "GimpUi": {
-        "imports": [
-            "import collections",
-            "import enum",
-            "import typing",
-            "from typing import Any, type_check_only",
-            "import cairo",
-            "import gi",
-            "from gi.repository import Gdk, GdkPixbuf, Gio, GLib, GObject, Gtk",
-            "import Babl",
-            "import Gegl",
-            "import Gimp",
-        ],
-        "version": "3.0",
-    },
-    "Babl": {
-        "imports": [
-            "import enum",
-            "from typing import Any",
-            "import gi",
-        ],
-        "version": "0.1",
-    },
-    "Gegl": {
-        "imports": [
-            "import collections",
-            "import enum",
-            "import typing",
-            "from typing import Any, type_check_only",
-            "import gi",
-            "from gi.repository import GLib, GObject",
-            "import Babl",
-        ],
-        "version": "0.4",
-    },
-}
+METADATA = None
+SPACE = 4 * " "
 
 
 def get_str_short_type(typ: str | type) -> str:
@@ -93,7 +42,7 @@ def get_str_signature(obj: any) -> str:
     return get_str_short_type(sig.format())
 
 
-def get_str_introspection(parent: Any, num_space: int = 0) -> str:
+def get_str_introspection(parent: Any, num_space: int = 0, gir: Element = None) -> str:
     s_intros = []
     for name, child in vars(parent).items():
         if name.startswith("__") or name == "_lock":
@@ -109,9 +58,13 @@ def get_str_introspection(parent: Any, num_space: int = 0) -> str:
         # @property
         # def name(self) -> ret_type: ...
         if typ is property:
-            # todo: get signature from gir fields
+            if name.startswith("_"):
+                continue
             s_intros.append("@property")
-            s_intros.append("def %s(self) -> Any: ... " % name)
+            s_type = get_str_short_type(
+                util.get_str_field_type_from_gir(gir, parent.__name__, name)
+            )
+            s_intros.append("def %s(self) -> %s: ... " % (name, s_type))
             continue
 
         if typ in [enum.EnumType, gi._enum.GEnumMeta, gi._enum.GFlagsMeta]:
@@ -138,7 +91,6 @@ def get_str_introspection(parent: Any, num_space: int = 0) -> str:
             s_intros.append("def %s%s: ..." % (name, s_sig))
             continue
 
-        # todo: done?
         if typ in [gi.types.StructMeta, gi.types.GObjectMeta]:
             bases = get_str_bases(child.__bases__)
             s_intros.append("class %s(%s):" % (name, bases))
@@ -156,12 +108,11 @@ def get_str_introspection(parent: Any, num_space: int = 0) -> str:
                 for name, prop in inspect.getmembers(props):
                     # ignore all props not from its direct parent
                     if prop.owner_type.pytype is child:
-                        prop_gtype = prop.value_type
-                        prop_type = prop_gtype.pytype or GTYPE_TO_PYTHON.get(
-                            prop_gtype, bytes
+                        s_type = get_str_short_type(
+                            util.get_str_pytype(prop.value_type)
                         )
-                        s_type = get_str_short_type(prop_type)
                         s_props.append(SPACE + "%s: %s" % (name, s_type))
+
                 if len(s_props):
                     s_props_exist.append("@type_check_only")
                     s_props_exist.append(
@@ -174,14 +125,14 @@ def get_str_introspection(parent: Any, num_space: int = 0) -> str:
             s_intros.extend(s_props_exist)
 
             # others
-            s_class_content = get_str_introspection(child, num_space + 1)
+            s_class_content = get_str_introspection(child, num_space + 1, gir=gir)
             if s_class_content != "":
                 s_intros.append(s_class_content)
             elif s_props_exist == []:
                 s_intros.append(SPACE + "pass")
             continue
 
-        print("[MISSING]", name, child, typ)
+        sys.exit("[MISSING]", name, child, typ)
     s_intros = [num_space * SPACE + s_intro for s_intro in s_intros]
     return "\n".join(s_intros)
 
@@ -191,17 +142,25 @@ def gen_stubs(module_name: str) -> str:
     CONTEXT = module_name
 
     if "version" in METADATA[module_name]:
-        gi.require_version(module_name, METADATA[module_name]["version"])
+        version = METADATA[module_name]["version"]
+        gi.require_version(module_name, version)
     mod = importlib.import_module(".%s" % module_name, package="gi.repository")
 
     s_intros = []
     s_intros.extend(METADATA[module_name]["imports"])
+
     inspect.getmembers(mod)  # force load
-    s_intros.append(get_str_introspection(mod))
+
+    gir = util.get_main_namespace_from_gir("%s-%s.gir" % (module_name, version))
+    s_intros.append(get_str_introspection(mod, gir=gir))
     return "\n".join(s_intros)
 
 
 def main():
+    with open("metadata.json") as f:
+        global METADATA
+        METADATA = json.load(f)
+
     for module_name in METADATA:
         with open("%s.pyi" % module_name, "w") as f:
             print(gen_stubs(module_name), file=f)
